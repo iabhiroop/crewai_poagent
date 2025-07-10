@@ -39,19 +39,16 @@ The system includes a comprehensive Streamlit-based dashboard with multiple inte
 
 #### 📦 Inventory Management Interface
 ![Inventory Management](assests/Screenshot%202025-07-10%20205848.png)
+![Inventory Management ](assests/Screenshot%202025-07-10%20205901.png)
 *Automated inventory tracking with AI-powered restock recommendations and stock level visualization*
 
 #### 🔄 Purchase Queue Management
-![Purchase Queue](assests/Screenshot%202025-07-10%20205901.png)
+![Purchase Queue](assests/Screenshot%202025-07-10%20205910.png)
 *Automated purchase request processing with validation status and approval workflows*
 
 #### 🏭 Supplier Order Processing
-![Supplier Orders](assests/Screenshot%202025-07-10%20205910.png)
+![Supplier Orders](assests/Screenshot%202025-07-10%20205921.png)
 *Intelligent order processing with document parsing and production scheduling*
-
-#### ⚙️ System Control & Agent Management
-![System Control](assests/Screenshot%202025-07-10%20205921.png)
-*Real-time agent execution control with logging and performance monitoring*
 
 #### 🤖 AI Agent Workflow Visualization
 ![Agent Workflow](assests/Screenshot%202025-07-10%20205947.png)
