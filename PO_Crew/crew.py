@@ -63,7 +63,7 @@ class BuyerCrew():
         return Task(
             config=self.tasks_config['monitor_inventory_levels_task'],
             agent=self.inventory_management_agent(),
-            output_file='tests/inventory_report.md'
+            output_file='data/tests/inventory_report.md'
         )    
     
     @task
@@ -72,7 +72,7 @@ class BuyerCrew():
             config=self.tasks_config['report_demand_patterns_task'],
             agent=self.inventory_management_agent(),
             context=[self.monitor_inventory_levels_task()],
-            output_file='tests/demand_patterns_report.md'
+            output_file='data/tests/demand_patterns_report.md'
         )
 
     @task
@@ -81,7 +81,7 @@ class BuyerCrew():
             config=self.tasks_config['validate_purchase_request_task'],
             agent=self.purchase_validation_agent(),
             context=[self.analyze_demand_patterns_task()],
-            output_file="tests/validated_purchase_requests.json"
+            output_file="data/tests/validated_purchase_requests.json"
         )
 
     @task
@@ -90,7 +90,7 @@ class BuyerCrew():
             config=self.tasks_config['process_purchase_queue_task'],
             agent=self.purchase_order_agent(),
             context=[self.validate_purchase_request_task()],
-            output_file='tests/purchase_queue.json'
+            output_file='data/tests/purchase_queue.json'
         )
 
     @task
@@ -99,7 +99,7 @@ class BuyerCrew():
             config=self.tasks_config['generate_purchase_order_task'],
             agent=self.purchase_order_agent(),
             context=[self.process_purchase_queue_task()],
-            output_file='tests/purchase_order.md'
+            output_file='data/tests/purchase_order.md'
         )
 
     @task
@@ -108,7 +108,7 @@ class BuyerCrew():
             config=self.tasks_config['send_purchase_order_emails_task'],
             agent=self.purchase_order_agent(),
             context=[self.generate_purchase_order_task()],
-            output_file='tests/po_email_delivery_report.md'
+            output_file='data/tests/po_email_delivery_report.md'
         )
 
     @crew
@@ -118,7 +118,8 @@ class BuyerCrew():
             agents=self.agents,
             tasks=self.tasks,
             process=Process.sequential,
-            verbose=True
+            verbose=True,
+            max_rpm=9
         )
 
 
@@ -128,7 +129,7 @@ class SupplierCrew():
     """Supplier Crew - Handles order processing, production planning, and supply feasibility"""
 
     agents_config = 'config/supplier_agents.yaml'
-    tasks_config = 'config/supplier_tasks_new.yaml'
+    tasks_config = 'config/supplier_tasks.yaml'
 
     @agent
     def order_intelligence_agent(self) -> Agent:
@@ -174,7 +175,7 @@ class SupplierCrew():
         return Task(
             config=self.tasks_config['process_incoming_orders_task'],
             agent=self.order_intelligence_agent(),
-            output_file='tests/incoming_orders.json'
+            output_file='data/tests/incoming_orders.json'
         )
 
     @task
@@ -183,7 +184,7 @@ class SupplierCrew():
             config=self.tasks_config['extract_order_details_task'],
             agent=self.order_intelligence_agent(),
             context=[self.process_incoming_orders_task()],
-            output_file='tests/extracted_orders.json'
+            output_file='data/tests/extracted_orders.json'
         )
 
     @task
@@ -192,7 +193,7 @@ class SupplierCrew():
             config=self.tasks_config['record_extracted_orders_task'],
             agent=self.production_queue_management_agent(),
             context=[self.extract_order_details_task()],
-            output_file='tests/recorded_extracted_orders.json'
+            output_file='data/tests/recorded_extracted_orders.json'
         )
 
     @task
@@ -201,7 +202,7 @@ class SupplierCrew():
             config=self.tasks_config['send_confirmation_emails_task'],
             agent=self.production_queue_management_agent(),
             context=[self.record_extracted_orders_task()],
-            output_file='tests/confirmation_emails_report.md'
+            output_file='data/tests/confirmation_emails_report.md'
         )
 
     # @task
@@ -228,5 +229,6 @@ class SupplierCrew():
             agents=self.agents,
             tasks=self.tasks,
             process=Process.sequential,
-            verbose=True
+            verbose=True,
+            max_rpm=9
         )

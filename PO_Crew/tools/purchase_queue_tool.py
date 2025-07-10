@@ -8,15 +8,27 @@ to store approved requests and the purchase order agent to retrieve and process 
 import json
 import os
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Type
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
 
 
+class PurchaseQueueInput(BaseModel):
+    """Schema for PurchaseQueueTool operations"""
+    action: str = Field(
+        ..., description="Action to perform: 'add_to_queue', 'get_pending', 'mark_completed', 'get_status'"
+    )
+    request_data: Optional[Dict[str, Any]] = Field(
+        None, description="Purchase request data for 'add_to_queue' action"
+    )
+    request_id: Optional[str] = Field(
+        None, description="Request ID for 'mark_completed' action"
+    )
+
 class PurchaseQueueTool(BaseTool):
     """Tool for managing purchase request queue operations"""
     
-    name: str = "Purchase Queue Tool"
+    name: str = "PurchaseQueueTool"
     description: str = (
         "Manages a queue of validated purchase requests with complete supplier and line item details. "
         "Supports adding validated requests to the queue, retrieving pending requests for processing, "
@@ -56,11 +68,20 @@ class PurchaseQueueTool(BaseTool):
         "\n}"
         "\n\nActions: 'add_to_queue', 'get_pending', 'mark_completed', 'get_status'"
     )
-
-    queue_file: str = Field(default="purchase_queue.json", description="File path for the purchase queue")
+    args_schema: Type[BaseModel] = PurchaseQueueInput
+    queue_file: str = Field(default="", description="Path to the purchase queue JSON file")
 
     def __init__(self, **kwargs):
+        # Get the project root directory (where the main script runs)
+        project_root = os.getcwd()
+        queue_file_path = os.path.join(project_root, "data", "purchase_queue.json")
+        
+        # Set the queue_file field before calling super().__init__()
+        kwargs['queue_file'] = queue_file_path
         super().__init__(**kwargs)
+        
+        # Create data directory if it doesn't exist
+        os.makedirs(os.path.dirname(self.queue_file), exist_ok=True)
         # Initialize queue file if it doesn't exist
         if not os.path.exists(self.queue_file):
             self._initialize_queue()

@@ -70,39 +70,40 @@ class DocumentGeneratorTool(BaseTool):
     def _convert_latex_to_pdf(self, latex_content: str, filename_prefix: str = "PO") -> str:
         """Convert LaTeX content to PDF using pdflatex"""
         try:
-            tex_filename = f"{filename_prefix}.tex"
-            pdf_filename = f"{filename_prefix}.pdf"
+            # Get the project root directory and create data directory if it doesn't exist
+            project_root = os.getcwd()
+            data_dir = os.path.join(project_root, "data")
+            os.makedirs(data_dir, exist_ok=True)
+            
+            tex_filename = os.path.join(data_dir, f"{filename_prefix}.tex")
+            pdf_filename = os.path.join(data_dir, f"{filename_prefix}.pdf")
 
             # Write LaTeX content to .tex file
             with open(tex_filename, "w", encoding="utf-8") as f:
                 f.write(latex_content)
 
-            # Run pdflatex to generate PDF
-            cmd = ['pdflatex', '-interaction', 'nonstopmode', tex_filename]
+            # Run pdflatex to generate PDF (change to data directory)
+            original_dir = os.getcwd()
+            os.chdir(data_dir)
+            
+            cmd = ['pdflatex', '-interaction', 'nonstopmode', f"{filename_prefix}.tex"]
             proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = proc.communicate()
+            
+            # Change back to original directory
+            os.chdir(original_dir)
 
             # Clean up auxiliary files
             for ext in ['.tex', '.log', '.aux']:
                 try:
-                    os.unlink(f"{filename_prefix}{ext}")
+                    aux_file = os.path.join(data_dir, f"{filename_prefix}{ext}")
+                    os.unlink(aux_file)
                 except FileNotFoundError:
                     pass
-
-            # if proc.returncode != 0:
-            #     raise Exception(f"pdflatex failed: {stderr.decode()}")
 
             return pdf_filename
         
         except Exception as e:
-            # Fallback: create a simple text-based PDF alternative
-            # return 
-            # self._create_simple_po_file(filename_prefix)
-            # return json.dumps({
-            #     "status": "error",
-            #     "message": f"Failed to convert LaTeX to PDF: {str(e)}",
-            #     "fallback": "A simple text-based PO file was created instead."
-            # })
             return pdf_filename
 
     def _create_pdf_purchase_order(self, supplier_name: str, items: List[Dict], 
@@ -283,4 +284,3 @@ Date: {datetime.now().strftime('%Y-%m-%d')}
                 raise ValueError(f"Invalid unit_price for item {item.get('item_code', 'Unknown')}")
         
         return True
-

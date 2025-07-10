@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Type
 from pydantic import BaseModel
@@ -17,15 +18,24 @@ class RestockInventoryTool(BaseTool):
         "Analysis types: 'restock_needed' (items below threshold), 'inventory_status' (complete overview)"
     )
     args_schema: Type[BaseModel] = RestockAnalysisInput
+    db_path: str = ""
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        # Get the project root directory (where the main script runs)
+        project_root = os.getcwd()
+        db_path = os.path.join(project_root, "data", "inventory.db")
+        
+        # Set the db_path field before calling super().__init__()
+        super().__init__(db_path=db_path, **kwargs)
+        
+        # Create data directory if it doesn't exist
+        os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
         self._initialize_database()
 
     def _initialize_database(self):
         """Initialize the inventory database with sample data including supplier emails."""
         try:
-            conn = sqlite3.connect("inventory.db")
+            conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
             
             # Create inventory table with supplier_email column
@@ -42,19 +52,7 @@ class RestockInventoryTool(BaseTool):
                     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
-            
-            # Add supplier_email column if it doesn't exist (for existing databases)
-            try:
-                cursor.execute("ALTER TABLE inventory ADD COLUMN supplier_email TEXT")
-                # Update existing records with default email addresses
-                cursor.execute("UPDATE inventory SET supplier_email = 'orders@papercorp.com' WHERE supplier = 'Paper Corp' AND supplier_email IS NULL")
-                cursor.execute("UPDATE inventory SET supplier_email = 'procurement@techhardware.com' WHERE supplier = 'Tech Hardware' AND supplier_email IS NULL")
-                cursor.execute("UPDATE inventory SET supplier_email = 'sales@coffeeco.com' WHERE supplier = 'Coffee Co' AND supplier_email IS NULL")
-                conn.commit()
-            except sqlite3.OperationalError:
-                # Column already exists
-                pass
-              # Insert sample data if table is empty
+
             cursor.execute("SELECT COUNT(*) FROM inventory")
             if cursor.fetchone()[0] == 0:
                 sample_data = [
@@ -122,7 +120,7 @@ class RestockInventoryTool(BaseTool):
                 "supplier_email": item[5],
                 "unit_price": item[6],
                 "priority": priority,
-                "suggested_order_qty": max(item[2] * 2, 10)            })
+                "suggested_order_qty": max(item[2] * 1, 10)            })
         
         return {
             "urgency_level": urgency_level,
@@ -133,7 +131,7 @@ class RestockInventoryTool(BaseTool):
 
     def _run(self, analysis_type: str, category: str = "", urgency_level: str = "all") -> str:
         try:
-            conn = sqlite3.connect("inventory.db")
+            conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
             
             if analysis_type == "restock_needed":
@@ -198,7 +196,10 @@ class RestockInventoryTool(BaseTool):
 if __name__ == "__main__":
     test = 1
     if test:
-        conn = sqlite3.connect("inventory.db")
+        # For testing, use direct path
+        project_root = os.getcwd()
+        db_path = os.path.join(project_root, "data", "inventory.db")
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         cursor.execute("DELETE FROM inventory")
         conn.commit()

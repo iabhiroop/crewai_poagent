@@ -29,15 +29,15 @@ class FetchEmailsInput(BaseModel):
 class FetchEmailsTool(BaseTool):
     name: str = "Fetch Emails Tool"
     description: str = (
-        "Fetches the last 50 emails from Gmail inbox and saves only those with attachments. "
-        "Returns sender address, subject, body content, and paths to saved attachments."
+        "Fetches up to the last 50 unread emails from Gmail inbox and saves only those with attachments. "
+        "Returns sender, subject, body content, and saved attachment paths."
     )
     args_schema: Type[BaseModel] = FetchEmailsInput
 
     def _run(self) -> str:
         """
-        Fetch the last 50 emails and save only those with attachments
-          Returns:
+        Fetch up to the last 50 unread emails and save only those with attachments.
+        Returns:
             JSON string with emails that have attachments, including sender, subject, body, and attachment paths
         """
         try:
@@ -53,8 +53,8 @@ class FetchEmailsTool(BaseTool):
             # Connect to Gmail
             mail = connect_to_gmail_imap(user, password)
             
-            # Search for ALL emails (last 50) - excluding sent emails
-            status, messages = mail.search(None, f'NOT FROM "{user}"')
+            # Search for unread emails only and exclude emails sent by self
+            status, messages = mail.search(None, 'UNSEEN', f'NOT FROM "{user}"')
             if status != 'OK':
                 raise Exception(f"Failed to search emails: {status}")
                 
@@ -107,7 +107,8 @@ class FetchEmailsTool(BaseTool):
                                             # Clean filename for security
                                             filename = re.sub(r'[^\w\-_\.]', '_', filename)
                                             # Create attachments directory if it doesn't exist
-                                            attachments_dir = os.path.join(os.getcwd(), "email_attachments")
+                                            project_root = os.getcwd()
+                                            attachments_dir = os.path.join(project_root, "data", "email_attachments")
                                             os.makedirs(attachments_dir, exist_ok=True)
                                             filepath = os.path.join(attachments_dir, f"{email_id.decode()}_{filename}")
                                             try:
@@ -145,13 +146,23 @@ class FetchEmailsTool(BaseTool):
             mail.logout()
             
             # Prepare response
-            result = {
-                "status": "success",
-                "total_emails_processed": processed_count,
-                "emails_with_attachments_count": len(emails_with_attachments),
-                "timestamp": datetime.now().isoformat(),
-                "emails": emails_with_attachments
-            }
+            if not emails_with_attachments:
+                result = {
+                    "status": "success",
+                    "total_emails_processed": processed_count,
+                    "emails_with_attachments_count": 0,
+                    "timestamp": datetime.now().isoformat(),
+                    "message": "There were no purchase orders to be found",
+                    "emails": []
+                }
+            else:
+                result = {
+                    "status": "success",
+                    "total_emails_processed": processed_count,
+                    "emails_with_attachments_count": len(emails_with_attachments),
+                    "timestamp": datetime.now().isoformat(),
+                    "emails": emails_with_attachments
+                }
             
             return json.dumps(result, indent=2)
             
@@ -163,13 +174,15 @@ class FetchEmailsTool(BaseTool):
             })
 
 class EmailMonitoringTool(BaseTool):
-    """Simplified email monitoring tool - fetches last 50 emails and saves only those with attachments"""
-    name: str = "Email Monitoring Service"
-    description: str = "Fetches last 50 emails and saves only those with attachments"
+    """Simplified email monitoring tool - fetches unread emails with attachments"""
+    name: str = "EmailMonitoringTool"
+    description: str = (
+        "Fetches up to the last 50 unread emails and saves only those with attachments."
+    )
 
     def _run(self, **kwargs) -> str:
         """
-        Fetch last 50 emails and save only those with attachments
+        Fetch up to the last 50 unread emails and save only those with attachments
         """
         fetch_tool = FetchEmailsTool()
         return fetch_tool._run()
