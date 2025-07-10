@@ -19,9 +19,9 @@ parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, parent_dir)
 
 try:
-    from crewai_poagent.crew import BuyerCrew, SupplierCrew
-    from crewai_poagent.tools.purchase_queue_tool import PurchaseQueueTool
-    from crewai_poagent.tools.restock_inventory_tool import RestockInventoryTool
+    from PO_Crew.crew import BuyerCrew, SupplierCrew
+    from PO_Crew.tools.purchase_queue_tool import PurchaseQueueTool
+    from PO_Crew.tools.restock_inventory_tool import RestockInventoryTool
 except ImportError as e:
     st.error(f"Error importing modules: {e}")
     st.stop()

@@ -10,7 +10,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 src_dir = os.path.join(current_dir, '..')
 sys.path.insert(0, src_dir)
 
-from crewai_poagent.crew import BuyerCrew, SupplierCrew
+from PO_Crew.crew import BuyerCrew, SupplierCrew
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
