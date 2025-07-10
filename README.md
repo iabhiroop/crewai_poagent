@@ -24,37 +24,37 @@ Demo videos and screenshots showcasing key automation workflows.
 
 ### 📹 Video Demonstrations
 
-- [Buyer Crew Automation](DemoVid/Recording%202025-07-10%20175032%20Buyer%20crew.mp4) - Complete buyer crew workflow demonstration
-- [Buyer Logs Analysis](DemoVid/Recording%202025-07-10%20175221%20buyer%20logs.mp4) - Detailed logging and monitoring showcase
-- [Supplier Agent Processing](DemoVid/Recording%202025-07-10%20183909%20supplier%20agent.mp4) - Supplier crew order processing demo
-- [Supplier Logs Monitoring](DemoVid/Recording%202025-07-10%20184024%20supplier%20logs.mp4) - Supplier workflow logging demonstration
+- [Buyer Crew Automation](assests/Recording%202025-07-10%20175032%20Buyer%20crew.mp4) - Complete buyer crew workflow demonstration
+- [Buyer Logs Analysis](assests/Recording%202025-07-10%20175221%20buyer%20logs.mp4) - Detailed logging and monitoring showcase
+- [Supplier Agent Processing](assests/Recording%202025-07-10%20183909%20supplier%20agent.mp4) - Supplier crew order processing demo
+- [Supplier Logs Monitoring](assests/Recording%202025-07-10%20184024%20supplier%20logs.mp4) - Supplier workflow logging demonstration
 
 ### 🖼️ Screenshots & UI Samples
 
 The system includes a comprehensive Streamlit-based dashboard with multiple interfaces for different stakeholders:
 
 #### 📊 Main Dashboard Overview
-![System Overview](DemoVid/Screenshot%202025-07-10%20205835.png)
+![System Overview](assests/Screenshot%202025-07-10%20205835.png)
 *Real-time system metrics, inventory alerts, and automation status monitoring*
 
 #### 📦 Inventory Management Interface
-![Inventory Management](DemoVid/Screenshot%202025-07-10%20205848.png)
+![Inventory Management](assests/Screenshot%202025-07-10%20205848.png)
 *Automated inventory tracking with AI-powered restock recommendations and stock level visualization*
 
 #### 🔄 Purchase Queue Management
-![Purchase Queue](DemoVid/Screenshot%202025-07-10%20205901.png)
+![Purchase Queue](assests/Screenshot%202025-07-10%20205901.png)
 *Automated purchase request processing with validation status and approval workflows*
 
 #### 🏭 Supplier Order Processing
-![Supplier Orders](DemoVid/Screenshot%202025-07-10%20205910.png)
+![Supplier Orders](assests/Screenshot%202025-07-10%20205910.png)
 *Intelligent order processing with document parsing and production scheduling*
 
 #### ⚙️ System Control & Agent Management
-![System Control](DemoVid/Screenshot%202025-07-10%20205921.png)
+![System Control](assests/Screenshot%202025-07-10%20205921.png)
 *Real-time agent execution control with logging and performance monitoring*
 
 #### 🤖 AI Agent Workflow Visualization
-![Agent Workflow](DemoVid/Screenshot%202025-07-10%20205947.png)
+![Agent Workflow](assests/Screenshot%202025-07-10%20205947.png)
 *Live agent collaboration view showing buyer and supplier crew interactions*
 
 ### 🎯 Key UI Features
