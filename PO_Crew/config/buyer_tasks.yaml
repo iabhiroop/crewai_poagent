@@ -1,0 +1,229 @@
+monitor_inventory_levels_task:
+  description: >
+    Use the RestockInventoryTool to monitor current inventory levels and generate 
+    a comprehensive inventory status overview. Analyze stock health across all 
+    categories and identify critical items that need immediate attention.
+    Use analysis_type='inventory_status' to get complete inventory overview.
+  expected_output: >
+    A comprehensive inventory status report containing:
+    - Total inventory overview with health scores
+    - Count of low stock and critical items
+    - Total inventory value assessment
+    - Recommendations for immediate action
+
+report_demand_patterns_task:
+  description: >
+    Use the RestockInventoryTool with analysis_type='restock_needed' to analyze 
+    demand patterns and predict future inventory needs. The output should be structured
+    to provide supplier-grouped recommendations with complete line item details suitable.
+    After generating the supplier-grouped reorder recommendations, use ReportFileTool 
+    with action='save_text', create_dirs=1, file_path='data/PO_suggestion/report.txt', and the generated 
+    report data to save the report as a text file. 
+    Use ReportFileTool to generate a report file with the reorder_recommendations.
+    
+    Ensure the analysis includes:
+    - Supplier information (name, contact details)
+    - Line item details (item_code, description, quantity, unit_price, uom, urgency)
+    - Delivery requirements and estimated costs
+    - Priority levels for urgent items
+  expected_output: >
+    A detailed demand analysis report including:
+    - Suggested reorder quantities and estimated costs with complete item specifications
+    - Line items grouped by supplier with item_code, description, quantity, unit_price, uom, urgency
+    - Supplier contact information for each group
+    - Total estimated investment required for restocking
+    - Line items structured for easy queue processing and PO generation
+    - Delivery timeline recommendations per supplier
+
+validate_purchase_request_task:
+  description: >
+    Use FinancialDataTool to check budget, validate purchase request against budget 
+    availability, supplier credentials, and company policies. After validation, use 
+    PurchaseQueueTool with action='add_to_queue' to store approved purchase requests 
+    in the processing queue for the PO generation team. All the validated requests
+    should be grouped by supplier for optimized purchasing with complete line item details.
+    
+    Queue entries must contain the following format:
+    {
+      "supplier_name": "Supplier Company Name",
+      "supplier_contact": {
+        "contact_person": "Contact Name",
+        "email": "supplier@email.com"
+      },
+      "line_items": [
+        {
+          "item_code": "ITM001",
+          "description": "Item description",
+          "quantity": 100,
+          "unit_price": 25.50,
+          "uom": "pcs",
+          "urgency": "high",
+          "budget_code": "DEPT001",
+          "estimated_total": 2550.00
+        }
+      ],
+      "delivery_requirements": {
+        "delivery_date": "YYYY-MM-DD",
+        "delivery_address": "Complete address",
+        "special_instructions": "Any special requirements"
+      },
+      "budget_validation": {
+        "approved": true,
+        "budget_available": 50000.00,
+        "estimated_cost": 2550.00
+      },
+      "priority": "high",
+      "request_date": "YYYY-MM-DD",
+      "validated_by": "Validator Name"
+    }
+  expected_output: >
+    A purchase validation report containing:
+    - Line items grouped by supplier with complete details (item_code, description, quantity, unit_price, uom, urgency)
+    - Supplier contact information and delivery requirements
+    - Budget verification and approval status with available amounts
+    - Queue storage confirmation for approved requests with structured data format
+    - Priority levels and estimated costs per supplier group
+
+process_purchase_queue_task:
+  description: >
+    Use PurchaseQueueTool with action='get_pending' to retrieve validated purchase 
+    requests from the queue. Review all pending requests and prepare them for 
+    PO generation and processing. The queue should contain complete supplier and 
+    line item information as specified in validate_purchase_request_task.
+    
+    Expected queue data format per entry:
+    {
+      "supplier_name": "Supplier Company Name",
+      "supplier_contact": {
+        "contact_person": "Contact Name",
+        "email": "supplier@email.com"
+      },
+      "line_items": [
+        {
+          "item_code": "ITM001",
+          "description": "Item description",
+          "quantity": 100,
+          "unit_price": 25.50,
+          "uom": "pcs",
+          "urgency": "high",
+          "budget_code": "DEPT001",
+          "estimated_total": 2550.00
+        }
+      ],
+      "delivery_requirements": {
+        "delivery_date": "YYYY-MM-DD",
+        "delivery_address": "Complete address",
+        "special_instructions": "Any special requirements"
+      },
+      "budget_validation": {
+        "approved": true,
+        "budget_available": 50000.00,
+        "estimated_cost": 2550.00
+      },
+      "priority": "high",
+      "request_date": "YYYY-MM-DD",
+      "validated_by": "Validator Name"
+    }
+    
+    Process each queue entry to extract supplier-grouped line items ready for PO generation.
+  expected_output: >
+    Purchase queue processing report containing:
+    - List of all pending purchase requests with complete supplier details
+    - Total number of requests ready for processing
+    - Structured data ready for DocumentGeneratorTool input format:
+      {
+        "supplier_name": "Supplier Company Name",
+        "supplier_contact": {
+          "contact_person": "Contact Name",
+          "email": "supplier@email.com"
+        },
+        "line_items": [
+          {
+            "item_code": "ITM001",
+            "description": "Item description",
+            "quantity": 100,
+            "unit_price": 25.50,
+            "uom": "pcs",
+            "urgency": "high",
+            "budget_code": "DEPT001",
+            "estimated_total": 2550.00
+          }
+        ],
+        "delivery_requirements": {
+          "delivery_date": "YYYY-MM-DD",
+          "delivery_address": "Complete address",
+          "special_instructions": "Any special requirements"
+        }
+      }
+
+generate_purchase_order_task:
+  description: >
+    Process queue data from process_purchase_queue_task and use DocumentGeneratorTool with 
+    action='create_pdf_po' to create properly formatted purchase order documents. Extract
+    supplier information and line items from the structured queue data and convert them
+    to the required DocumentGeneratorTool format.
+    
+    Queue data contains:
+    - supplier_name and supplier_contact details
+    - line_items with item_code, description, quantity, unit_price, uom, urgency
+    - delivery_requirements
+    
+    Transform queue line_items to DocumentGeneratorTool format:
+    [
+      {
+        "item_code": "ITM001", 
+        "description": "Widget A Description", 
+        "quantity": 100, 
+        "unit_price": 25.50, 
+        "uom": "pcs"
+      },
+    ]
+    
+    Required parameters for DocumentGeneratorTool:
+    - action: "create_pdf_po"
+    - supplier_name: Extract from queue data
+    - items: Transform from queue line_items format
+    - delivery_date: Extract from delivery_requirements
+    - delivery_address: Extract from delivery_requirements 
+    - contact_person: Extract from supplier_contact
+    - contact_email: Extract from supplier_contact
+    - special_instructions: Extract from delivery_requirements
+    - po_number: Auto-generated or custom
+    
+    After successful generation, use PurchaseQueueTool with action='mark_completed' 
+    to mark the processed requests as completed and pass the correct PO document paths.
+    
+  expected_output: >
+    After all the requests completed with purchase order documents, report including:
+    - List of suppliers contacted with email addresses
+    - Purchase order numbers sent to each supplier
+    - Attachment information (PDF files paths)
+    - CC recipients for internal stakeholders
+    - For each generated purchase order, provide the following output format for the next task:
+      {
+        "supplier_name": "Supplier Company Name",
+        "contact_person": "Contact Name",
+        "contact_email": "supplier@email.com",
+        "po_number": "PO-2024-0001",
+        "pdf_file_path": "data/PO-2024-0001.pdf",
+        "cc_recipients": ["stakeholder1@email.com", "stakeholder2@email.com"],
+        "delivery_date": "YYYY-MM-DD",
+        "special_instructions": "Any special requirements"
+      }
+    - Ensure the pdf_file_path is the exact location of the generated PO document for email attachment in the next task.
+
+send_purchase_order_emails_task:
+  description: >
+    Use PoEmailGeneratorTool to send professional purchase order emails to suppliers 
+    with the generated PO documents with action='send_po_email'. Extract supplier 
+    information and PO data from the previous task context and send personalized emails 
+    with PDF attachments when available. Include delivery dates, special instructions, 
+    and mark urgent orders appropriately. Ensure all suppliers receive their purchase 
+    orders promptly for processing.
+  expected_output: >
+    Email delivery confirmation report including:
+    - List of suppliers contacted with email addresses
+    - Purchase order numbers sent to each supplier
+    - Attachment information (PDF files sent)
+    - CC recipients for internal stakeholders
+
