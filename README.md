@@ -24,6 +24,10 @@ Demo videos and screenshots showcasing key automation workflows.
 
 ### 📹 Video Demonstrations
 
+
+https://github.com/user-attachments/assets/9f59dbb8-0901-4256-bd1a-8ef813964b01
+
+
 - [Buyer Crew Automation](assests/Recording%202025-07-10%20175032%20Buyer%20crew.mp4) - Complete buyer crew workflow demonstration
 - [Buyer Logs Analysis](assests/Recording%202025-07-10%20175221%20buyer%20logs.mp4) - Detailed logging and monitoring showcase
 - [Supplier Agent Processing](assests/Recording%202025-07-10%20183909%20supplier%20agent.mp4) - Supplier crew order processing demo
