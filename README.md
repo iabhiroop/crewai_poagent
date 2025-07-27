@@ -1,6 +1,6 @@
 # Purchase Order Agent CrewAI
 
-A agentic AI based automation for supply chain ordering and documentation processes that traditionally require extensive manual effort and inventory data analysis.
+An agentic AI based automation for supply chain ordering and documentation processes that traditionally require extensive manual effort and inventory data analysis.
 
 ## 🚀 Overview
 
@@ -106,9 +106,7 @@ The system architecture supports scaling based on automation acceptance levels:
 - Compliance Monitoring Agent
 - Exception Handling Agent
 
-## 📋 POC Capabilities & Time Savings
-
-### Problem Statement
+## Problem Statement
 Traditional supply chain processes involve:
 - **Hours of manual inventory analysis** across multiple spreadsheets and systems
 - **Time-consuming purchase validation** requiring cross-referencing budgets, policies, and supplier data
@@ -118,10 +116,10 @@ Traditional supply chain processes involve:
 ### Automated Solutions
 
 **Core Automation (Current POC)**
-- **Inventory Intelligence**: Automated stock level monitoring and restock recommendations (saves 4-6 hours/week)
-- **Smart Purchase Validation**: Automated budget verification and supplier credential checks (saves 2-3 hours/week)
-- **Document Automation**: Professional PO generation with automated supplier communications (saves 3-4 hours/week)
-- **Order Processing**: Automated parsing and extraction from incoming documents (saves 5-7 hours/week)
+- **Inventory Intelligence**: Automated stock level monitoring and restock recommendations
+- **Smart Purchase Validation**: Automated budget verification and supplier credential checks
+- **Document Automation**: Professional PO generation with automated supplier communications
+- **Order Processing**: Automated parsing and extraction from incoming documents
 
 **Advanced Capabilities (Expansion Ready)**
 - **Multi-channel Integration**: Gmail IMAP and document parsing using OCR
